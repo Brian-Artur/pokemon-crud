@@ -6,6 +6,6 @@ export const pokemonSchema = z.object({
   types: z.array(z.string()),
 })
 
-export const pokemosnListSchema = z.array(pokemonSchema);
+export const pokemonsListSchema = z.array(pokemonSchema);
 
 export type Pokemon = z.infer<typeof pokemonSchema>;

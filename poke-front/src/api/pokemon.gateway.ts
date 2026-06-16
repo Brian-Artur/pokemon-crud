@@ -1,4 +1,4 @@
-import { pokemosnListSchema } from "../pokemons/pokemon.schema";
+import { pokemonsListSchema } from "../pokemons/pokemon.schema";
 
 const PATH_BASE = "/api/pokemons";               // path del backekd
 
@@ -7,7 +7,7 @@ export const pokemonGateway = {
     const res = await fetch(PATH_BASE);
     if (!res.ok) throw new Error("No se pudieron cargar pokémons");
     const data = await res.json();
-    return pokemosnListSchema.parse(data);
+    return pokemonsListSchema.parse(data);
   },
 
   async getById(id: number) {
