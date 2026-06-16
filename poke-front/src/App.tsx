@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 import { pokemonGateway } from "./api/pokemon.gateway";
 
+type Pokemon = { id: number; name: string; types: string[] };                             
+
 function App() {
-  const [data, setData] = useState<any>(null);
+  const [pokemons, setPokemons] = useState<Pokemon[]>([]);
 
   useEffect(() => {
-    fetch("/api/pokemons")
-      .then((r) => r.json())
-      .then(setData);
-
     pokemonGateway.getAll()
+      .then(setPokemons);
   }, []);
 
-  console.log(
-    "Chanchito feliz"
-  )
-
-  return <pre>{JSON.stringify(data, null, 2)}</pre>;
+  return (
+    <ul>
+      {pokemons.map((p) => (
+        <li key={p.id}>{p.name} - {p.types.join(", ")}</li>
+      ))}
+    </ul>
+  );
 
 }
 export default App;
