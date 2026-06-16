@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { pokemonGateway } from "./api/pokemon.gateway";
+import type { Pokemon } from "./pokemons/pokemon.schema";
 
-type Pokemon = { id: number; name: string; types: string[] };                             
-
-function App() {
+export default function App() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
 
   useEffect(() => {
@@ -18,6 +17,4 @@ function App() {
       ))}
     </ul>
   );
-
 }
-export default App;
