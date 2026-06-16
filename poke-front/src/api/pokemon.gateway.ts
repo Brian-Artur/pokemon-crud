@@ -6,7 +6,7 @@ export const pokemonGateway = {
   async getAll() {
     const res = await fetch(PATH_BASE);
     if (!res.ok) throw new Error("No se pudieron cargar pokémons");
-    const data = res.json();
+    const data = await res.json();
     return pokemosnListSchema.parse(data);
   },
 
