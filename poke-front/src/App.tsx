@@ -6,8 +6,7 @@ export default function App() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
 
   useEffect(() => {
-    pokemonGateway.getAll()
-      .then(setPokemons);
+    pokemonGateway.getAll().then(setPokemons);
   }, []);
 
   return (

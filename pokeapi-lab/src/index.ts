@@ -1,4 +1,6 @@
 import express from 'express';
+import { nuevoPokemonSchema } from './pokemons/pokemon.schema';
+import { error } from 'node:console';
 
 const app = express();
 app.use(express.json());                    // Codifico JSON a obj literal
@@ -14,18 +16,23 @@ const pokemons = [
   { id: 4, name: 'charmander', "types": ["fire"] },
 ];
 
+
 app.get('/api/pokemons', (req, res) => {    // Paso 2
   res.json(pokemons);
 });
 
-/*
+
 app.post('/api/pokemons', (req, res) => {   // Paso 2
-  const { name } = req.body;
-  const nuevo = { id: pokemons.length + 1, name};
+  const result = nuevoPokemonSchema.safeParse(req.body);
+  if(!result.success){
+    res.status(400).json({ error: result.error.issues });
+    return; 
+  }
+  const nuevo = { id: pokemons.length + 1, ...result.data };
   pokemons.push(nuevo);
   res.status(201).json(nuevo);
 });
-*/
+
 
 const PORT = 3000;
 
