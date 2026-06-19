@@ -28,6 +28,20 @@ app.get('/api/pokemons', async (req, res) => {    // Paso 2
   }
 });
 
+app.get('/api/pokemons/:id', async (req, res) => { 
+  try {
+    const id = Number(req.params.id);
+    const pokemon = await pokemonRepository.getById(id);
+    if(!pokemon){
+      res.status(404).json({ error: "Pokémon no encontrado" });
+      return;
+    }
+    res.json(pokemon);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al cargar el pokémon" }); 
+  }
+});
 
 app.post('/api/pokemons', async (req, res) => {
   const result = pokemonSchema.safeParse(req.body);
@@ -41,6 +55,18 @@ app.post('/api/pokemons', async (req, res) => {
   } catch (err){
     console.error(err);
     res.status(500).json({ error: "No se pudo crear el pokémon" });
+  }
+});
+
+app.delete('/api/pokemons/:id', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const eliminado = await pokemonRepository.remove(id);
+    if (!eliminado) return res.status(404).json({ error: "Pokémon no encontrado" });
+    res.status(204).send();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "No se pudo eliminar el pokémon" });
   }
 });
 
