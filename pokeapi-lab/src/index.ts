@@ -1,6 +1,7 @@
 import express from 'express';
-import { nuevoPokemonSchema } from './pokemons/pokemon.schema';
-import { error } from 'node:console';
+
+import { pokemonSchema } from './pokemons/pokemon.schema';
+import { pokemonRepository } from './pokemons/pokemon.repository';
 
 const app = express();
 app.use(express.json());                    // Codifico JSON a obj literal
@@ -17,20 +18,30 @@ const pokemons = [
 ];
 
 
-app.get('/api/pokemons', (req, res) => {    // Paso 2
-  res.json(pokemons);
+app.get('/api/pokemons', async (req, res) => {    // Paso 2
+  try {
+    const lista = await pokemonRepository.getAll();
+    res.json(lista);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al cargar pokemons" });  
+  }
 });
 
 
-app.post('/api/pokemons', (req, res) => {   // Paso 2
-  const result = nuevoPokemonSchema.safeParse(req.body);
+app.post('/api/pokemons', async (req, res) => {
+  const result = pokemonSchema.safeParse(req.body);
   if(!result.success){
     res.status(400).json({ error: result.error.issues });
     return; 
   }
-  const nuevo = { id: pokemons.length + 1, ...result.data };
-  pokemons.push(nuevo);
-  res.status(201).json(nuevo);
+  try {
+    await pokemonRepository.create(result.data);
+    res.status(201).json(result.data);
+  } catch (err){
+    console.error(err);
+    res.status(500).json({ error: "No se pudo crear el pokémon" });
+  }
 });
 
 

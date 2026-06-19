@@ -11,4 +11,11 @@ export const pokemonRepository = {
       types: JSON.parse(row.types),
     }));
   },
-};
+
+  async create(pokemon: Pokemon): Promise<void> {
+    await pool.query(
+      "INSERT INTO pokemons (id, name, types) VALUES (?, ?, ?)",
+      [pokemon.id, pokemon.name, JSON.stringify(pokemon.types)]
+    );
+  },
+};  
