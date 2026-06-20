@@ -14,6 +14,10 @@ const pokeapiResponseSchema = z.object({
   ),
 });
 
+// Contrato gateway
+export interface PokeapiGateway {
+  getPokemon(identifier: number | string): Promise<Pokemon>;
+}
 
 // Adaptador HTTP
 export const pokeapiGateway = {
