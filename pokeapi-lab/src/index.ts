@@ -1,74 +1,18 @@
 import express from 'express';
 
+import { pool } from './db';
+import { MariaDbPokemonRepository, type PokemonRepository } from './pokemons/pokemon.repository';
 import { pokemonSchema } from './pokemons/pokemon.schema';
-import { pokemonRepository } from './pokemons/pokemon.repository';
+import { PokemonController } from './pokemons/pokemon.controller';
+import { pokemonRoutes } from './pokemons/pokemon.routes';
 
 const app = express();
 app.use(express.json());                    // Codifico JSON a obj literal
 
-// Paso 1: algo vivo
-app.get('/api/ping', (req, res) => {
-  res.json({ message: 'pong' });            // Paso Obj a JSON
-});
+const pokemonRepository: PokemonRepository = new MariaDbPokemonRepository(pool);
+const controller = new PokemonController(pokemonRepository);
 
-// Paso 2: prototipo feo
-const pokemons = [
-  { id: 1, name: 'bulbasaur', "types": ["grass", "poison"] },
-  { id: 4, name: 'charmander', "types": ["fire"] },
-];
-
-
-app.get('/api/pokemons', async (req, res) => {    // Paso 2
-  try {
-    const lista = await pokemonRepository.getAll();
-    res.json(lista);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Error al cargar pokemons" });  
-  }
-});
-
-app.get('/api/pokemons/:id', async (req, res) => { 
-  try {
-    const id = Number(req.params.id);
-    const pokemon = await pokemonRepository.getById(id);
-    if(!pokemon){
-      res.status(404).json({ error: "Pokémon no encontrado" });
-      return;
-    }
-    res.json(pokemon);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Error al cargar el pokémon" }); 
-  }
-});
-
-app.post('/api/pokemons', async (req, res) => {
-  const result = pokemonSchema.safeParse(req.body);
-  if(!result.success){
-    res.status(400).json({ error: result.error.issues });
-    return; 
-  }
-  try {
-    await pokemonRepository.create(result.data);
-    res.status(201).json(result.data);
-  } catch (err){
-    console.error(err);
-    res.status(500).json({ error: "No se pudo crear el pokémon" });
-  }
-});
-
-app.delete('/api/pokemons/:id', async (req, res) => {
-  try {
-    const id = Number(req.params.id);
-    const eliminado = await pokemonRepository.remove(id);
-    if (!eliminado) return res.status(404).json({ error: "Pokémon no encontrado" });
-    res.status(204).send();
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "No se pudo eliminar el pokémon" });
-  }
-});
+app.use("/api/pokemons", pokemonRoutes(controller))
 
 
 const PORT = 3000;
