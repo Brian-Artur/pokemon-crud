@@ -1,16 +1,15 @@
 import express from 'express';
 
 import { pool } from './db';
-import { MariaDbPokemonRepository, type PokemonRepository } from './pokemons/pokemon.repository';
-import { pokemonSchema } from './pokemons/pokemon.schema';
+import { MariaDbPokemonRepository } from './pokemons/pokemon.repository';
 import { PokemonController } from './pokemons/pokemon.controller';
 import { pokemonRoutes } from './pokemons/pokemon.routes';
 
 const app = express();
 app.use(express.json());                    // Codifico JSON a obj literal
 
-const pokemonRepository: PokemonRepository = new MariaDbPokemonRepository(pool);
-const controller = new PokemonController(pokemonRepository);
+const repository = new MariaDbPokemonRepository(pool);
+const controller = new PokemonController(repository);
 
 app.use("/api/pokemons", pokemonRoutes(controller))
 
