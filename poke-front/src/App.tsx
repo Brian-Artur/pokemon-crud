@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
-import { pokemonGateway } from "./api/pokemon.gateway";
-import type { Pokemon } from "./pokemons/pokemon.schema";
+import { PokemonList } from "./components/PokemonList";
+import { usePokemons } from "./hooks/usePokemons";
 
 export default function App() {
+  /*
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
 
   useEffect(() => {
     pokemonGateway.getAll().then(setPokemons);
   }, []);
+  */
 
-  return (
-    <ul>
-      {pokemons.map((p) => (
-        <li key={p.id}>{p.name} - {p.types.join(", ")}</li>
-      ))}
-    </ul>
-  );
+  const {pokemons, loading, error } = usePokemons();
+
+  if(loading) return <p>Cargando...</p>;
+  if(error) return <p>Error: {error}</p>;
+
+  return <PokemonList pokemons={pokemons} />;
 }
