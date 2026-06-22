@@ -1,4 +1,4 @@
-import { pokemonsListSchema } from "../pokemons/pokemon.schema";
+import { pokemonSchema, pokemonsListSchema, type Pokemon } from "../pokemons/pokemon.schema";
 
 const PATH_BASE = "/api/pokemons";          // path del backekd
 
@@ -17,20 +17,18 @@ export const pokemonGateway = {
   },
 
   //          tipo NuevoPokemon
-  async create(data: any) {
+  async create(pokemon: Pokemon) {
     const res = await fetch(PATH_BASE, {
       method: "POST",
       headers: { "Content-Type": "application/json"},
-      body: JSON.stringify(data)
+      body: JSON.stringify(pokemon)
     });
     if (!res.ok) throw new Error("No se pudo crear");
-    return res.json();
+    return pokemonSchema.parse(await res.json());
   },
 
   async remove(id: number){
-    const res = await fetch(PATH_BASE, {
-      method: "DELETE"
-    });
+    const res = await fetch(`${PATH_BASE}/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("No se pudo eliminar");
   }
 }

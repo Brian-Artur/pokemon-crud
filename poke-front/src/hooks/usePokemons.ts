@@ -9,12 +9,26 @@ export function usePokemons() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    pokemonGateway.getAll()
-    .then(setPokemons)
-    .catch((err) => setError(err.message))
-    .finally(() => setLoading(false));
-  }, []);
+  const addPokemon = async (pokemon: Pokemon) => {
+    await pokemonGateway.create(pokemon);
+    load();
+  }
 
-  return { pokemons, loading, error };
+  const removePokemon = async (id: number) => {
+    await pokemonGateway.remove(id);        // Espera a que el back confirme
+    load();                                 // Re-lee base de datos
+  }
+
+  const load = () => {
+    pokemonGateway.getAll()
+      .then(setPokemons)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }
+  
+
+
+  useEffect(() => { load(); }, []);
+
+  return { pokemons, loading, error, addPokemon, removePokemon };
 }
