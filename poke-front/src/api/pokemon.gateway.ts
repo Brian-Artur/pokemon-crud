@@ -3,6 +3,7 @@ import { pokemonSchema, pokemonsListSchema, type Pokemon } from "../pokemons/pok
 const PATH_BASE = "/api/pokemons";          // path del backekd
 
 export const pokemonGateway = {
+  
   async getAll() {
     const res = await fetch(PATH_BASE);
     if (!res.ok) throw new Error("No se pudieron cargar pokémons");
