@@ -7,14 +7,15 @@ import { pokemonRoutes } from './pokemons/pokemon.routes';
 import { errorMiddleware } from './pokemons/error.middleware';
 
 const app = express();
-app.use(express.json());                    // Codifico JSON a obj literal
+app.use(express.json());                    // Middleware de parse
 
 const repository = new MariaDbPokemonRepository(pool);
 const controller = new PokemonController(repository);
 
+// Middleware de enrutado
 app.use("/api/pokemons", pokemonRoutes(controller))
 
-app.use(errorMiddleware);                   // Siempre al final
+app.use(errorMiddleware);                   // Middleware de error, al final
 
 const PORT = 3000;
 
