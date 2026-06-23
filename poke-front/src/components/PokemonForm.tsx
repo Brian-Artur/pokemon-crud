@@ -2,28 +2,30 @@ import { useState } from "react";
 import type { Pokemon } from "../pokemons/pokemon.schema"
 
 
-
 type Props = {
   onCreate: (pokemon: Pokemon) => void;
+  createError: string | null;
 };
 
-export function PokemonForm({ onCreate }: Props ) {
+export function PokemonForm({ onCreate, createError }: Props ) {
   const [id, setId] = useState(""); 
   const [name, setName] = useState(""); 
   const [types, setTypes] = useState(""); 
 
-  const hadlerSubmit = () => {
+  const hadlerSubmit = async () => {
     const pokemon: Pokemon = {
       id: Number(id),
       name,
       types: types.split(",").map((t) => t.trim()).filter(Boolean),
     };
 
-    onCreate(pokemon);
+    const ok = await onCreate(pokemon);
 
-    setId("");
-    setName("");
-    setTypes("");
+    if (ok){
+      setId("");
+      setName("");
+      setTypes("");
+    }
   };
 
   return (
@@ -39,6 +41,7 @@ export function PokemonForm({ onCreate }: Props ) {
              placeholder="tipos (coma)" />
       
       <button onClick={hadlerSubmit}>Crear</button>
+      {createError && <p style={{ color: "red"}}>{createError}</p>}
     </div>
   )
 

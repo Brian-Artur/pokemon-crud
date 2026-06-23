@@ -8,8 +8,10 @@ export function usePokemons() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
 
-  const addPokemon = async (pokemon: Pokemon) => {
+  const addPokemon = async (pokemon: Pokemon): Promise<boolean> => {
+    setCreateError(null);
     await pokemonGateway.create(pokemon);
     load();
   }

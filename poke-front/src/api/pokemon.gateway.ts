@@ -24,7 +24,13 @@ export const pokemonGateway = {
       headers: { "Content-Type": "application/json"},
       body: JSON.stringify(pokemon)
     });
-    if (!res.ok) throw new Error("No se pudo crear");
+    if (!res.ok) {
+      const body = await res.json().catch(() => null);
+      const message = Array.isArray(body?.error)
+        ? body.error.map((issue: { message: string }) => issue.message).join(", ")
+        : body?.error ?? "No se pudo crear el pokémon"
+      throw new Error(message);
+    }
     return pokemonSchema.parse(await res.json());
   },
 
