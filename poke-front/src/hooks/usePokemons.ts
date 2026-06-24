@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { pokemonGateway } from "../api/pokemon.gateway";
-import type{ Pokemon } from "../pokemons/pokemon.schema";
+import type { Pokemon, PokemonSinId } from "../pokemons/pokemon.schema";
 
 
 
@@ -12,9 +12,20 @@ export function usePokemons() {
 
   const addPokemon = async (pokemon: Pokemon): Promise<boolean> => {
     setCreateError(null);
-    await pokemonGateway.create(pokemon);
-    load();
+    try {
+      await pokemonGateway.create(pokemon);
+      load();
+      return true;
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : "Error desconocido");
+      return false;
+    }
   }
+
+  const updatePokemon = async (id: number, datos: PokemonSinId) => {
+    await pokemonGateway.update(id, datos);
+    load();   // patrón refetch, igual que en add/remove
+  };
 
   const removePokemon = async (id: number) => {
     await pokemonGateway.remove(id);        // Espera a que el back confirme
@@ -27,10 +38,11 @@ export function usePokemons() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }
-  
+
 
 
   useEffect(() => { load(); }, []);
 
-  return { pokemons, loading, error, addPokemon, removePokemon };
+  return { pokemons, loading, error, createError, 
+           addPokemon, updatePokemon, removePokemon };
 }

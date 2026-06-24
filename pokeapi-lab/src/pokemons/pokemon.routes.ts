@@ -10,6 +10,7 @@ export function pokemonRoutes(controller: PokemonController): Router {
   router.get("/", controller.getAll);
   router.get("/:id", validateId, controller.getById);
   router.post("/", controller.create);
+  router.put("/:id", validateId, controller.update);
   router.delete("/:id", validateId, controller.remove);
 
   return router;

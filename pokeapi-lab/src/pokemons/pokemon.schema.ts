@@ -6,7 +6,7 @@ export const pokemonSchema = z.object({
   types: z.array(z.string()).min(1),
 })
 
-export const nuevoPokemonSchema = pokemonSchema.omit({ id: true });
+export const pokemonSinIdSchema = pokemonSchema.omit({ id: true });
 
 export type Pokemon = z.infer<typeof pokemonSchema>;
-export type NuevoPokemon = z.infer<typeof nuevoPokemonSchema>;
+export type PokemonSinId = z.infer<typeof pokemonSinIdSchema>;

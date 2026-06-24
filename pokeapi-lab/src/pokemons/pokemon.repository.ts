@@ -1,5 +1,5 @@
 import { Pool } from "mysql2/promise";
-import type { Pokemon } from "./pokemon.schema";
+import type { Pokemon, PokemonSinId } from "./pokemon.schema";
 import { ResultSetHeader, type RowDataPacket } from "mysql2";
 
 
@@ -8,6 +8,7 @@ export interface PokemonRepository {
   getAll(): Promise<Pokemon[]>;
   getById(id: number): Promise<Pokemon | null>;
   create(pokemon: Pokemon): Promise<boolean>;
+  update(id: number, datos: Omit<Pokemon, "id">): Promise<boolean>,
   remove(id: number): Promise<boolean>;
 }
 
@@ -22,7 +23,7 @@ function toPokemon(row: RowDataPacket): Pokemon {
 
 export class MariaDbPokemonRepository implements PokemonRepository {
 
-  constructor(private readonly pool: Pool){}
+  constructor(private readonly pool: Pool) { }
 
   async getAll(): Promise<Pokemon[]> {
     const [rows] = await this.pool.query<RowDataPacket[]>(
@@ -43,6 +44,14 @@ export class MariaDbPokemonRepository implements PokemonRepository {
     const [res] = await this.pool.query<ResultSetHeader>(
       "INSERT INTO pokemons (id, name, types) VALUES (?, ?, ?)",
       [pokemon.id, pokemon.name, JSON.stringify(pokemon.types)]
+    );
+    return res.affectedRows > 0;
+  }
+
+  async update(id: number, datos: PokemonSinId): Promise<boolean> {
+    const [res] = await this.pool.query<ResultSetHeader>(
+      "UPDATE pokemons SET name = ?, types = ? WHERE id = ?",
+      [datos.name, JSON.stringify(datos.types), id]
     );
     return res.affectedRows > 0;
   }

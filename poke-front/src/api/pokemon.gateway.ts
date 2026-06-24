@@ -1,9 +1,18 @@
-import { pokemonSchema, pokemonsListSchema, type Pokemon } from "../pokemons/pokemon.schema";
+import { pokemonSchema, pokemonsListSchema, type Pokemon, type PokemonSinId } from "../pokemons/pokemon.schema";
 
 const PATH_BASE = "/api/pokemons";          // path del backekd
 
+
+async function extractError(res: Response, fallback: string): Promise<string> {
+  const body = await res.json().catch(() => null);
+  return Array.isArray(body?.error)
+    ? body.error.map((issue: { message: string }) => issue.message).join(", ")
+    : body?.error ?? fallback;
+}
+
+
 export const pokemonGateway = {
-  
+
   async getAll() {
     const res = await fetch(PATH_BASE);
     if (!res.ok) throw new Error("No se pudieron cargar pokémons");
@@ -21,20 +30,24 @@ export const pokemonGateway = {
   async create(pokemon: Pokemon) {
     const res = await fetch(PATH_BASE, {
       method: "POST",
-      headers: { "Content-Type": "application/json"},
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(pokemon)
     });
-    if (!res.ok) {
-      const body = await res.json().catch(() => null);
-      const message = Array.isArray(body?.error)
-        ? body.error.map((issue: { message: string }) => issue.message).join(", ")
-        : body?.error ?? "No se pudo crear el pokémon"
-      throw new Error(message);
-    }
+    if (!res.ok) throw new Error(await extractError(res, "No se pudo crear el pokémon"));
     return pokemonSchema.parse(await res.json());
   },
 
-  async remove(id: number){
+  async update(id: number, datos: PokemonSinId) {
+    const res = await fetch(`${PATH_BASE}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datos)
+    });
+    if (!res.ok) throw new Error(await extractError(res, "No se pudo actualizar el pokémon"));
+    return pokemonSchema.parse(await res.json());
+  },
+
+  async remove(id: number) {
     const res = await fetch(`${PATH_BASE}/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("No se pudo eliminar");
   }

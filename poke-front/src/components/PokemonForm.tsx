@@ -3,7 +3,7 @@ import type { Pokemon } from "../pokemons/pokemon.schema"
 
 
 type Props = {
-  onCreate: (pokemon: Pokemon) => void;
+  onCreate: (pokemon: Pokemon) => Promise<boolean>;
   createError: string | null;
 };
 
@@ -43,6 +43,6 @@ export function PokemonForm({ onCreate, createError }: Props ) {
       <button onClick={hadlerSubmit}>Crear</button>
       {createError && <p style={{ color: "red"}}>{createError}</p>}
     </div>
-  )
+  );
 
 }

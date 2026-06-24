@@ -6,15 +6,18 @@ export default function App() {
 
   const {pokemons, loading, 
          error, createError, 
-         addPokemon, removePokemon} = usePokemons();
+         addPokemon, updatePokemon, removePokemon} = usePokemons();
 
   if(loading) return <p>Cargando...</p>;
   if(error) return <p>Error: {error}</p>;
 
   return (
     <>
-      <PokemonForm onCreate={addPokemon} createError={createError} />
-      <PokemonList pokemons={pokemons} onRemove={removePokemon}/>
+      <PokemonForm onCreate={addPokemon} 
+                   createError={createError} />
+      <PokemonList pokemons={pokemons} 
+                   onUpdate={updatePokemon} 
+                   onRemove={removePokemon} />
     </>
   )
 }
