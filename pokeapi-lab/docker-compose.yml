@@ -2,11 +2,8 @@ services:
   db:
     image: mariadb:lts
     container_name: mariadb-estudio
-    environment:
-      MARIADB_ROOT_PASSWORD: "1234"
-      MARIADB_DATABASE: proyecto
-      MARIADB_USER: baf
-      MARIADB_PASSWORD: "1234"
+    env_file:
+      - db.env
     ports:
       - "127.0.0.1:3306:3306"
     volumes:
